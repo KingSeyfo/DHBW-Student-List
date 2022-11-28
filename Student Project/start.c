@@ -1,24 +1,17 @@
 #include <stdio.h>
+#include <
 
 int main() {
       struct datum{
-        int day;
-        int month;
-        int year;
-    };
-      struct student{
-        char firtName[50];
-        char lastName[50];
-        int matrikelNr;
-    };
-      
-        int dd,mm,yy;
-     
-    printf("Enter date (DD/MM/YYYY format): ");
-    scanf("%d/%d/%d",&dd,&mm,&yy);
+        int dd;
+        int mm;
+        int yyyy;
+            
+        printf("Enter date (DD/MM/YYYY format): ");
+    scanf("%d/%d/%d",&dd,&mm,&yyyy);
      
     //check year
-    if(yy>=1900 && yy<=9999)
+    if(yyyy>=1900 && yyyy<=9999)
     {
         //check month
         if(mm>=1 && mm<=12)
@@ -30,7 +23,7 @@ int main() {
                 printf("Date is valid.\n");
             else if((dd>=1 && dd<=28) && (mm==2))
                 printf("Date is valid.\n");
-            else if(dd==29 && mm==2 && (yy%400==0 ||(yy%4==0 && yy%100!=0)))
+            else if(dd==29 && mm==2 && (yyyy%400==0 ||(yyyy%4==0 && yyyy%100!=0)))
                 printf("Date is valid.\n");
             else
                 printf("Day is invalid.\n");
@@ -44,7 +37,14 @@ int main() {
     {
         printf("Year is not valid.\n");
     }
- 
-    return 0;    
+    };
+      struct student{
+        char firtName[50];
+        char lastName[50];
+        int matrikelNr;
+    };
+        return 0;
 }
+     
+    
 
