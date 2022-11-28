@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <
 
 int main() {
       struct datum{
