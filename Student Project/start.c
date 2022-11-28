@@ -9,7 +9,7 @@ int main() {
       struct student{
         char firtName[50];
         char lastName[50];
-        int matrikelNmr;
+        int matrikelNr;
     };
 }
 
