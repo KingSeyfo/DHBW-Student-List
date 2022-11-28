@@ -20,6 +20,9 @@ struct student{
 	char firtName[50];
 	char lastName[50];
 	int matrikelNr;
+	struct datum geb;
+	struct datum start;
+	struct datum ende;
 };
 
 
