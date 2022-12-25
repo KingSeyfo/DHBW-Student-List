@@ -8,23 +8,16 @@
 typedef struct datum Datum;
 typedef struct student Student;
 
-void inputDatum(char msg[50],Datum* var);
-bool checkDatumisValid();
-void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end);
+
+
+void readFile(FILE* file);
+void addStudent(Student* stud, FILE* file);
 void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end, Student* final);
+void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end);
 void inputData(char msg[30], char* ptr);
 void inputMatrikel(char msg[30], int* ptr);
-void addStudent(Student* stud, FILE* file);
-
-char firstname[20];
-char lastname[20];
-int matrikel;
-struct datum birth_date;
-struct datum start_date;
-struct datum end_date;
-
-struct student subject;
-
+void inputDatum(char msg[50], Datum* var);
+bool checkDatumisValid(int tag, int monat, int jahr);
 
 struct datum{
 	int day;
@@ -34,66 +27,92 @@ struct datum{
 
 
 struct student{
-	char firstName;
-	char lastName;
+	char firstName[20];
+	char lastName[20];
 	int matrikelNr;
 	struct datum geb;
 	struct datum start;
 	struct datum ende;
 };
 
+
 int main(){
+	Student* result = malloc(sizeof(Student));
 
-	char* pfirstname = &firstname;
-	char* plastname = &lastname;
-	int* pmatrikel = &matrikel;
-	Datum* pbirth = &birth_date;
-	Datum* pstartdate = &start_date;
-	Datum* penddate = &end_date;
+	char (*firstname)[20] = malloc(sizeof(char[20]));
+	char (*lastname)[20] = malloc(sizeof(char[20]));
+	int* matrikel = malloc(sizeof(int));
+	Datum* birth = malloc(sizeof(Datum));
+	Datum* startdate = malloc(sizeof(Datum));
+	Datum* enddate = malloc(sizeof(Datum));
 
-	Student* result = &subject;
 
 	FILE* file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "w");
-	inputStudent(pfirstname,plastname,pmatrikel,pbirth,pstartdate,penddate);
-	combine(pfirstname,plastname,pmatrikel,pbirth,pstartdate,penddate, result);
+
+	inputStudent(firstname, lastname, matrikel, birth, startdate, enddate);
+	combine(firstname, lastname, matrikel, birth, startdate, enddate, result);
+
+
 	addStudent(result, file);
+	printf("Nun lesen\n");
 	readFile(file);
+
+	printf("Normaler Print\n");
+
+	printf("%s\n",result->firstName);
+	printf("%s\n",result->lastName);
+	printf("%d\n",result->matrikelNr);
+	printf("%d/%d/%d\n",result->geb.day, result->geb.month, result->geb.year);
+	printf("%d/%d/%d\n",result->start.day, result->start.month, result->start.year);
+	printf("%d/%d/%d\n",result->ende.day, result->ende.month, result->ende.year);
+
+
+	free(result);
+	free(firstname);
+	free(matrikel);
+	free(birth);
+	free(startdate);
+	free(enddate);
     return 0;
 }
 
+
 void readFile(FILE* file){
 	Student* a = malloc(sizeof(Student));
-
 	fread(a,sizeof(Student),1,file);
+
+
+	printf("%s\n",a->firstName);
+	printf("%s\n",a->lastName);
+	printf("%d\n",a->matrikelNr);
+	printf("%d/%d/%d\n",a->geb.day, a->geb.month, a->geb.year);
+	printf("%d/%d/%d\n",a->start.day, a->start.month, a->start.year);
+	printf("%d/%d/%d\n",a->ende.day, a->ende.month, a->ende.year);
+
+
 	fclose(file);
-	printf("%d",a->matrikelNr);
 }
+
 
 void addStudent(Student* stud, FILE* file){
 		if(file == NULL){
 			printf("Error beim erstellen der Datei");
 			return;
 		}
-
-
 		fwrite(stud, sizeof(Student),1,file);
-
-
-
 		fclose(file);
 }
 
 
 void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end, Student* final){
-	Student *a = malloc(sizeof(Student));
-	a->firstName = *fname;
-	a->lastName = *lname;
-	a->matrikelNr = *id;
-	a->geb = *geb;
-	a->start = *start;
-	a->ende = *end;
-	final = a;
+	strcpy(final->firstName, fname);
+	strcpy(final->lastName, lname);
+	final->matrikelNr = *id;
+	final->geb = *geb;
+	final->start = *start;
+	final->ende = *end;
 }
+
 
 void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end){
 	inputData("Bitte Vornamen angeben: \n",fname);
@@ -112,12 +131,15 @@ void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, D
 
 void inputData(char msg[30], char* ptr){
 	printf(msg);
-	scanf("%c ",ptr);
+	scanf("%s",ptr);
 }
+
+
 void inputMatrikel(char msg[30], int* ptr){
 	printf(msg);
-	scanf("%d ",ptr);
+	scanf("%d",ptr);
 }
+
 
 void inputDatum(char msg[50], Datum* var){
 	int tag,monat,jahr;
@@ -133,7 +155,6 @@ void inputDatum(char msg[50], Datum* var){
 		*var = a;
 	}
 }
-
 
 
 bool checkDatumisValid(int tag, int monat, int jahr){
