@@ -99,7 +99,13 @@ void addStudent(Student* stud, FILE* file){
 			printf("Error beim erstellen der Datei");
 			return;
 		}
-		fwrite(stud, sizeof(Student),1,file);
+//		fwrite(stud->firstName, sizeof(stud->firstName),1,file);
+//		fwrite(stud->lastName, sizeof(stud->lastName),1,file);
+		fprintf(file,"%s\n%s\n%d\n%d/%d/%d\n%d/%d/%d\n%d/%d/%d\n"
+				,stud->firstName,stud->lastName,stud->matrikelNr
+				,stud->geb.day, stud->geb.month, stud->geb.year
+				,stud->start.day, stud->start.month, stud->start.year
+				,stud->ende.day, stud->ende.month, stud->ende.year);
 		fclose(file);
 }
 
