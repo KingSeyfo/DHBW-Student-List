@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
+#include <math.h>
+
 
 typedef struct datum Datum;
 typedef struct student Student;
@@ -12,10 +14,10 @@ void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, D
 void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end, Student* final);
 void inputData(char msg[30], char* ptr);
 void inputMatrikel(char msg[30], int* ptr);
-void addStudent(Student* stud);
+void addStudent(Student* stud, FILE* file);
 
-char firstname;
-char lastname;
+char firstname[20];
+char lastname[20];
 int matrikel;
 struct datum birth_date;
 struct datum start_date;
@@ -50,47 +52,60 @@ int main(){
 	Datum* penddate = &end_date;
 
 	Student* result = &subject;
-//	inputStudent(pfirstname,plastname,pmatrikel,pbirth,pstartdate,penddate);
-//	combine(pfirstname,plastname,pmatrikel,pbirth,pstartdate,penddate, result);
-	addStudent(result);
 
+	FILE* file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "w");
+	inputStudent(pfirstname,plastname,pmatrikel,pbirth,pstartdate,penddate);
+	combine(pfirstname,plastname,pmatrikel,pbirth,pstartdate,penddate, result);
+	addStudent(result, file);
+	readFile(file);
     return 0;
 }
-void addStudent(Student* stud){
-	int matrikel = stud->matrikelNr;
-	char basepath[] ="C:\\Users\\Seyfu\\Desktop\\";
-	char txt[] = "s.txt";
 
-	char* compPath = malloc(16);
+void readFile(FILE* file){
+	Student* a = malloc(sizeof(Student));
 
-	strcpy(compPath, basepath);
-	strcat(compPath,matrikel);
-	strcat(compPath, txt);
-
-	FILE* file = fopen(compPath, "w");
-
-	if(file == NULL){
-		printf("Error beim erstellen der Datei");
-	}
-
+	fread(a,sizeof(Student),1,file);
+	fclose(file);
+	printf("%d",a->matrikelNr);
 }
+
+void addStudent(Student* stud, FILE* file){
+		if(file == NULL){
+			printf("Error beim erstellen der Datei");
+			return;
+		}
+
+
+		fwrite(stud, sizeof(Student),1,file);
+
+
+
+		fclose(file);
+}
+
+
 void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end, Student* final){
-	Student a;
-	a.firstName = *fname;
-	a.lastName = *lname;
-	a.matrikelNr = *id;
-	a.geb = *geb;
-	a.start = *start;
-	a.ende = *end;
-	*final = a;
+	Student *a = malloc(sizeof(Student));
+	a->firstName = *fname;
+	a->lastName = *lname;
+	a->matrikelNr = *id;
+	a->geb = *geb;
+	a->start = *start;
+	a->ende = *end;
+	final = a;
 }
 
 void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end){
 	inputData("Bitte Vornamen angeben: \n",fname);
+	fflush(stdin);
 	inputData("Bitte Nachnamen angeben: \n",lname);
+	fflush(stdin);
 	inputMatrikel("Bitte Matrikelnummer angeben: \n",id);
+	fflush(stdin);
 	inputDatum("Bitte Geburtsdatum(tt/mm/jjjj) angeben: \n",geb);
+	fflush(stdin);
 	inputDatum("Bitte Startdatum(tt/mm/jjjj) angeben: \n",start);
+	fflush(stdin);
 	inputDatum("Bitte Enddatum(tt/mm/jjjj) angeben: \n",end);
 }
 
@@ -106,11 +121,7 @@ void inputMatrikel(char msg[30], int* ptr){
 
 void inputDatum(char msg[50], Datum* var){
 	int tag,monat,jahr;
-//	int* day = &tag;
-//	int* month = &monat;
-//	int* year = &jahr;
 	printf(msg);
-//	scanf("%d/%d/%d",day, month, year);
 	scanf("%d/%d/%d",&tag,&monat,&jahr);
 	if(!checkDatumisValid(tag, monat, jahr)){
 		inputDatum(msg,var);
