@@ -6,14 +6,17 @@
 
 typedef struct datum Datum;
 typedef struct student Student;
+typedef struct vliste Liste;
 
 
-
+void vergleich();
 void chooseMode();
+void append(Liste **lst, Student* value);
+void combineStruct(FILE* file);
 void addStudent(FILE* file);
 void delete(FILE* file);
-void deleteStudent(FILE* file, char* ptr[]);
-void scanLinesforArray(FILE* file,char* search[],int* ptr);
+void deleteStudent(FILE* file, char* ptr);
+void scanLinesforArray(FILE* file,char* search,int* ptr);
 void combine(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end, Student* final);
 void inputStudent(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end);
 void inputData(char msg[30], char (*ptr)[20]);
@@ -38,17 +41,25 @@ struct student{
 	struct datum ende;
 };
 
+struct vliste{
+Student s;
+struct vliste *next;
+};
+
+
 const char filepath[] = "students.txt";
+Liste *liste;
 
 int main(){
-	FILE* file = fopen(filepath, "r");
+	FILE* file = fopen(filepath, "r+");
 	if(file == NULL){
 		file = fopen(filepath, "w");
+		file = fopen(filepath, "r+");
 	}
 	fclose(file);
-
+	combineStruct(file);
 	chooseMode();
-
+//	vergleich();
 	return 0;
 }
 
@@ -95,26 +106,107 @@ void chooseMode(){
 	}
 }
 
+void append(Liste **lst, Student* value){
+    Liste *neuesElement;
 
-void delete(FILE* file){
-	char matrikel[7],*ptr;
-	ptr = &matrikel;
-	printf("Wen möchtest du Löschen?\n");
-	printf("Bitte Matrikelnummer angeben:\n");
-	scanf("%s",ptr);
-	deleteStudent(file, ptr);
+    while( *lst != NULL ){
+        lst = &(*lst)->next;
+    }
+
+    neuesElement = malloc(sizeof(*neuesElement)); /* erzeuge ein neues Element */
+    neuesElement->s = *value;
+    neuesElement->next = NULL; /* Wichtig für das Erkennen des Listenendes     */
+
+    *lst = neuesElement;
+}
+
+void combineStruct(FILE* file){
+	int linecnt = 0;
+	char* line = malloc(sizeof(char)*64);
+	Student *sss;
+
+	while(fgets(line, sizeof(line),file) !=NULL){
+
+			char test = (line[strcspn(line, "\n")] = 0);
+			char* ohne = malloc(sizeof(test));
+			strcpy(ohne, &test);
+
+			++linecnt;
+			char* date[3];
+			switch (linecnt) {
+			case 1:
+				sss = malloc(sizeof(Student));
+				if(sss==NULL){
+						printf("ERROR");
+						return;
+				}
+				strcpy(sss->firstName, ohne);
+								break;
+			case 2:
+				strcpy(sss->lastName, ohne);
+								break;
+			case 3:
+				sss->matrikelNr = line[strcspn(line, "\n")] = 0;
+								break;
+			case 4:
+				date[0] = strtok(line, "/");
+				date[1] = strtok(NULL, "/");
+				date[2] = strtok(NULL, "/");
+				sss->geb.day = date[0];
+				sss->geb.month = date[1];
+				sss->geb.year = date[2];
+								break;
+			case 5:
+				date[0] = strtok(line, "/");
+				date[1] = strtok(NULL, "/");
+				date[2] = strtok(NULL, "/");
+				sss->start.day = date[0];
+				sss->start.month = date[1];
+				sss->start.year = date[2];
+								break;
+			case 6:
+				date[0] = strtok(line, "/");
+				date[1] = strtok(NULL, "/");
+				date[2] = strtok(NULL, "/");
+				sss->ende.day = date[0];
+				sss->ende.month = date[1];
+				sss->ende.year = date[2];
+
+				linecnt = 0;
+
+				append(&liste, sss);
+				printf(liste);
+				free(sss);
+				break;
+
+			default:
+					break;
+			}
+	}
 }
 
 
-void deleteStudent(FILE* file, char* ptr[]){
+void delete(FILE* file){
+	char* ma = malloc(sizeof(char[7]));
+	printf("Wen möchtest du Löschen?\n");
+	printf("Bitte Matrikelnummer angeben:\n");
+	scanf("%s",ma);
+	deleteStudent(file, ma);
+	free(ma);
+}
+
+
+void deleteStudent(FILE* file, char* ptr){
 	 int line,*lineptr;
 	 lineptr = &line;
 	 scanLinesforArray(file, ptr, lineptr);
+	 //Unfertig
 }
 
 
-void scanLinesforArray(FILE* file, char* search[], int* lineNr){
-	char line[1024];
+void scanLinesforArray(FILE* file, char* search, int* lineNr){
+//	char line[1024];
+	char* line = malloc(sizeof(char)*1024);
 	int line_count = 0;
 
 	printf("STRING: %s\n", search);
@@ -123,14 +215,37 @@ void scanLinesforArray(FILE* file, char* search[], int* lineNr){
 		++line_count;
 		printf(line);
 
+
 //		char *temp = malloc(strlen(line));
 //		strncpy(temp,line,strlen(line));
-//
-//		if(strstr(temp,search)!=NULL){
-//			printf("SUCCES %s",line_count);
-//		}
+
+	    char *found_string = strstr(line, search);
+
+	    if (found_string == NULL){
+//	        printf ("Substring not found in the string\n");
+	    }else{
+	        printf ("Substring located -> %d\n", line_count);
+	    }
+
 //		free(temp);
 	}
+}
+
+
+void vergleich(){
+	   char main_string[50] = "this is a testing string for testing";
+	    char search_string[30] = "test";
+
+	    char *found_string = strstr(main_string, search_string);
+
+	    if (found_string == NULL)
+	    {
+	        printf ("Substring not found in the string");
+	    }
+	    else
+	    {
+	        printf ("Substring located -> %s", found_string);
+	    }
 }
 
 
