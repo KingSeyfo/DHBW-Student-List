@@ -9,14 +9,14 @@ typedef struct datum Datum;
 typedef struct student Student;
 
 
-
-void readFile(FILE* file);
-void addStudent(Student* stud, FILE* file);
-void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end, Student* final);
-void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end);
-void inputData(char msg[30], char* ptr);
+void chooseMode();
+void addStudent(FILE* file);
+void combine(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end, Student* final);
+void inputStudent(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end);
+void inputData(char msg[30], char (*ptr)[20]);
 void inputMatrikel(char msg[30], int* ptr);
 void inputDatum(char msg[50], Datum* var);
+void menue();
 bool checkDatumisValid(int tag, int monat, int jahr);
 
 struct datum{
@@ -37,80 +37,111 @@ struct student{
 
 
 int main(){
-	Student* result = malloc(sizeof(Student));
-
-	char (*firstname)[20] = malloc(sizeof(char[20]));
-	char (*lastname)[20] = malloc(sizeof(char[20]));
-	int* matrikel = malloc(sizeof(int));
-	Datum* birth = malloc(sizeof(Datum));
-	Datum* startdate = malloc(sizeof(Datum));
-	Datum* enddate = malloc(sizeof(Datum));
-
-
-	FILE* file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "w");
-
-	inputStudent(firstname, lastname, matrikel, birth, startdate, enddate);
-	combine(firstname, lastname, matrikel, birth, startdate, enddate, result);
-
-
-	addStudent(result, file);
-	printf("Nun lesen\n");
-	readFile(file);
-
-	printf("Normaler Print\n");
-
-	printf("%s\n",result->firstName);
-	printf("%s\n",result->lastName);
-	printf("%d\n",result->matrikelNr);
-	printf("%d/%d/%d\n",result->geb.day, result->geb.month, result->geb.year);
-	printf("%d/%d/%d\n",result->start.day, result->start.month, result->start.year);
-	printf("%d/%d/%d\n",result->ende.day, result->ende.month, result->ende.year);
-
-
-	free(result);
-	free(firstname);
-	free(matrikel);
-	free(birth);
-	free(startdate);
-	free(enddate);
-    return 0;
-}
-
-
-void readFile(FILE* file){
-	Student* a = malloc(sizeof(Student));
-	fread(a,sizeof(Student),1,file);
-
-
-	printf("%s\n",a->firstName);
-	printf("%s\n",a->lastName);
-	printf("%d\n",a->matrikelNr);
-	printf("%d/%d/%d\n",a->geb.day, a->geb.month, a->geb.year);
-	printf("%d/%d/%d\n",a->start.day, a->start.month, a->start.year);
-	printf("%d/%d/%d\n",a->ende.day, a->ende.month, a->ende.year);
-
-
+	FILE* file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "r");
+	if(file == NULL){
+		file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "w");
+	}
 	fclose(file);
+
+	chooseMode();
+
+	return 0;
 }
 
 
-void addStudent(Student* stud, FILE* file){
+void chooseMode(){
+	int mode;
+	menue();
+	scanf("%d",&mode);
+	if(mode>7){
+		printf("ERROR");
+		exit(0);
+	}
+	FILE* file;
+	switch(mode){
+	case 0:
+		exit(0);
+		break;
+	case 1:
+		chooseMode();
+		break;
+	case 2:
+		file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "r+");
+		addStudent(file);
+		fclose(file);
+		chooseMode();
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+		break;
+	case 6:
+		break;
+	case 7:
+		break;
+	default:
+		chooseMode();
+		break;
+	}
+}
+
+
+void deleteStudent(int matrikel){
+
+}
+
+
+void addStudent(FILE* file){
+		Student* stud = malloc(sizeof(Student));
+
+		char (*firstname)[20] = malloc(sizeof(char[20]));
+		char (*lastname)[20] = malloc(sizeof(char[20]));
+		int* matrikel = malloc(sizeof(int));
+		Datum* birth = malloc(sizeof(Datum));
+		Datum* startdate = malloc(sizeof(Datum));
+		Datum* enddate = malloc(sizeof(Datum));
+
+
+		inputData("Bitte Vornamen angeben: \n",firstname);
+		fflush(stdin);
+		inputData("Bitte Nachnamen angeben: \n",lastname);
+		fflush(stdin);
+		inputMatrikel("Bitte Matrikelnummer angeben: \n",matrikel);
+		fflush(stdin);
+		inputDatum("Bitte Geburtsdatum(tt/mm/jjjj) angeben: \n",birth);
+		fflush(stdin);
+		inputDatum("Bitte Startdatum(tt/mm/jjjj) angeben: \n",startdate);
+		fflush(stdin);
+		inputDatum("Bitte Enddatum(tt/mm/jjjj) angeben: \n",enddate);
+
+		combine(firstname, lastname, matrikel, birth, startdate, enddate, stud);
+
 		if(file == NULL){
-			printf("Error beim erstellen der Datei");
+			printf("Error beim öffnen der Datei");
 			return;
 		}
-//		fwrite(stud->firstName, sizeof(stud->firstName),1,file);
-//		fwrite(stud->lastName, sizeof(stud->lastName),1,file);
+		fseek(file,0,SEEK_END);
+
 		fprintf(file,"%s\n%s\n%d\n%d/%d/%d\n%d/%d/%d\n%d/%d/%d\n"
 				,stud->firstName,stud->lastName,stud->matrikelNr
 				,stud->geb.day, stud->geb.month, stud->geb.year
 				,stud->start.day, stud->start.month, stud->start.year
 				,stud->ende.day, stud->ende.month, stud->ende.year);
-		fclose(file);
+
+		free(stud);
+		free(firstname);
+		free(lastname);
+		free(matrikel);
+		free(birth);
+		free(startdate);
+		free(enddate);
+		printf("Schüler hinzugefügt!\n");
 }
 
 
-void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end, Student* final){
+void combine(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end, Student* final){
 	strcpy(final->firstName, fname);
 	strcpy(final->lastName, lname);
 	final->matrikelNr = *id;
@@ -120,7 +151,7 @@ void combine(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum*
 }
 
 
-void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, Datum* end){
+void inputStudent(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end){
 	inputData("Bitte Vornamen angeben: \n",fname);
 	fflush(stdin);
 	inputData("Bitte Nachnamen angeben: \n",lname);
@@ -135,7 +166,7 @@ void inputStudent(char* fname, char* lname, int* id, Datum* geb, Datum* start, D
 }
 
 
-void inputData(char msg[30], char* ptr){
+void inputData(char msg[30], char (*ptr)[20]){
 	printf(msg);
 	scanf("%s",ptr);
 }
@@ -160,6 +191,20 @@ void inputDatum(char msg[50], Datum* var){
 		a.year = jahr;
 		*var = a;
 	}
+}
+
+
+void menue(){
+    printf("Auflistung moeglicher Funktionen:\n----------------------------------\n");
+    printf("0: exit(0); 						Diese Funktion verlässt das Programm.\n");
+    printf("1: menue();                         Diese Funktion listet alle moeglichen Funktionen auf.\n");
+    printf("2: addStudent();                    Diese Funktion erstellt einen neuen Studenten mit den eingetragenen Werten.\n");
+    printf("3: inputStudent();                  Diese Funktion aendert die Daten eines Studenten.\n");
+    printf("4: printStudent(Matrikelnummer);    Diese Funktion gibt alle Daten eines Studenten aus.\n");
+    printf("5: studentCount();                  Diese Funktion gibt die Anzahl aller Stundenten aus.\n");
+    printf("6: printAllStudents();              Diese Funktion gibt sortiert die Daten aller Studenten aus.\n");
+    printf("7: deleteStundent(Matrikelnummer);  Diese Funktion löscht einen Studenten und seine Daten.\n");
+    printf("Geben Sie die Nummer der gewünschten Funktion ein\n");
 }
 
 
