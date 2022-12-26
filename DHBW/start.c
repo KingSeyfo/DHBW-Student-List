@@ -4,9 +4,9 @@
 #include <string.h>
 #include <math.h>
 
-
 typedef struct datum Datum;
 typedef struct student Student;
+
 
 
 void chooseMode();
@@ -38,11 +38,12 @@ struct student{
 	struct datum ende;
 };
 
+const char filepath[] = "students.txt";
 
 int main(){
-	FILE* file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "r");
+	FILE* file = fopen(filepath, "r");
 	if(file == NULL){
-		file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "w");
+		file = fopen(filepath, "w");
 	}
 	fclose(file);
 
@@ -69,13 +70,13 @@ void chooseMode(){
 		chooseMode();
 		break;
 	case 2:
-		file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "r+");
+		file = fopen(filepath, "r+");
 		addStudent(file);
 		fclose(file);
 		chooseMode();
 		break;
 	case 3:
-		file = fopen("C:\\Users\\Seyfu\\Desktop\\students.txt", "r+");
+		file = fopen(filepath, "r+");
 		delete(file);
 		fclose(file);
 		chooseMode();
