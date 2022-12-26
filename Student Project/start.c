@@ -25,6 +25,8 @@ void inputData(char msg[30], char(*ptr)[20]);
 void inputMatrikel(char msg[30], int* ptr);
 void inputDatum(char msg[50], Datum* var);
 void menue();
+void SaveSingleStudent(FILE* file, Student* stud);
+void saveToFile(FILE* file);
 bool checkDatumisValid(int tag, int monat, int jahr);
 
 struct datum {
@@ -80,16 +82,19 @@ void chooseMode() {
 	FILE* file;
 	switch (mode) {
 	case 0:
+		file = fopen(filepath, "w");
+		saveToFile(file);
+		fclose(file);
 		exit(0);
 		break;
 	case 1:
 		chooseMode();
 		break;
 	case 2:
-		file = fopen(filepath, "r+");
-		addStudent(file);
-		fclose(file);
-		chooseMode();
+		//file = fopen(filepath, "r+");
+		//addStudent(file);
+		//fclose(file);
+		//chooseMode();
 		break;
 	case 3:
 		file = fopen(filepath, "r+");
@@ -144,6 +149,15 @@ void append(Liste** lst, Student* value) {
 	neuesElement->next = NULL; /* Wichtig f�r das Erkennen des Listenendes     */
 
 	*lst = neuesElement;
+}
+
+void saveToFile(FILE *file) {
+	while (liste->next != NULL) {
+		SaveSingleStudent(file, &liste->s);
+		liste = liste->next;
+	}
+	SaveSingleStudent(file, &liste->s);
+
 }
 
 void combineStruct(FILE* file) {
@@ -281,30 +295,7 @@ void vergleich() {
 }
 
 
-void addStudent(FILE* file) {
-	Student* stud = malloc(sizeof(Student));
-
-	char(*firstname)[20] = malloc(sizeof(char[20]));
-	char(*lastname)[20] = malloc(sizeof(char[20]));
-	int* matrikel = malloc(sizeof(int));
-	Datum* birth = malloc(sizeof(Datum));
-	Datum* startdate = malloc(sizeof(Datum));
-	Datum* enddate = malloc(sizeof(Datum));
-
-
-	inputData("Bitte Vornamen angeben: \n", firstname);
-	fflush(stdin);
-	inputData("Bitte Nachnamen angeben: \n", lastname);
-	fflush(stdin);
-	inputMatrikel("Bitte Matrikelnummer angeben: \n", matrikel);
-	fflush(stdin);
-	inputDatum("Bitte Geburtsdatum(tt/mm/jjjj) angeben: \n", birth);
-	fflush(stdin);
-	inputDatum("Bitte Startdatum(tt/mm/jjjj) angeben: \n", startdate);
-	fflush(stdin);
-	inputDatum("Bitte Enddatum(tt/mm/jjjj) angeben: \n", enddate);
-
-	combine(firstname, lastname, matrikel, birth, startdate, enddate, stud);
+void SaveSingleStudent(FILE* file, Student *stud) {
 
 	if (file == NULL) {
 		printf("Error beim �ffnen der Datei");
@@ -317,15 +308,6 @@ void addStudent(FILE* file) {
 		, stud->geb.day, stud->geb.month, stud->geb.year
 		, stud->start.day, stud->start.month, stud->start.year
 		, stud->ende.day, stud->ende.month, stud->ende.year);
-
-	free(stud);
-	free(firstname);
-	free(lastname);
-	free(matrikel);
-	free(birth);
-	free(startdate);
-	free(enddate);
-	printf("Sch�ler hinzugef�gt!\n");
 }
 
 
