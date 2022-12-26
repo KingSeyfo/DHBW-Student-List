@@ -96,11 +96,11 @@ void chooseMode(){
 
 
 void delete(FILE* file){
-	int matrikel,*ptr;
+	char matrikel[7],*ptr;
 	ptr = &matrikel;
 	printf("Wen möchtest du Löschen?\n");
 	printf("Bitte Matrikelnummer angeben:\n");
-	scanf("%d",ptr);
+	scanf("%s",ptr);
 	deleteStudent(file, matrikel);
 }
 
@@ -113,14 +113,14 @@ void deleteStudent(FILE* file, int matrikel){
 
 
 void scanLinesforArray(FILE* file, char search[], int* lineNr){
-	char line[20] = {0};
+	char line[1024];
 	int line_count = 0;
-	while(fgets(line, 20,file)){
+	while(fgets(line, sizeof(line),file) !=NULL){
 		++line_count;
-		if(strcmp(line,search) == 0){
-			//int to string conversion
-			printf("SUCCESS WITH LINE %d\n",(char)line_count);
-		}
+		printf(line);
+//		if(strstr(line,search) != NULL){
+//			printf("SUCCESS WITH LINE %d\n",(char)line_count);
+//		}
 	}
 }
 
