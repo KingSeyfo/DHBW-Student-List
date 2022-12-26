@@ -12,8 +12,8 @@ typedef struct student Student;
 void chooseMode();
 void addStudent(FILE* file);
 void delete(FILE* file);
-void deleteStudent(FILE* file, int matrikel);
-void scanLinesforArray(FILE* file,char search[],int* ptr);
+void deleteStudent(FILE* file, char* ptr[]);
+void scanLinesforArray(FILE* file,char* search[],int* ptr);
 void combine(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end, Student* final);
 void inputStudent(char (*fname)[20], char (*lname)[20], int* id, Datum* geb, Datum* start, Datum* end);
 void inputData(char msg[30], char (*ptr)[20]);
@@ -102,26 +102,34 @@ void delete(FILE* file){
 	printf("Wen möchtest du Löschen?\n");
 	printf("Bitte Matrikelnummer angeben:\n");
 	scanf("%s",ptr);
-	deleteStudent(file, matrikel);
+	deleteStudent(file, ptr);
 }
 
 
-void deleteStudent(FILE* file, int matrikel){
+void deleteStudent(FILE* file, char* ptr[]){
 	 int line,*lineptr;
 	 lineptr = &line;
-	 scanLinesforArray(file, ((char)matrikel), lineptr);
+	 scanLinesforArray(file, ptr, lineptr);
 }
 
 
-void scanLinesforArray(FILE* file, char search[], int* lineNr){
+void scanLinesforArray(FILE* file, char* search[], int* lineNr){
 	char line[1024];
 	int line_count = 0;
+
+	printf("STRING: %s\n", search);
+
 	while(fgets(line, sizeof(line),file) !=NULL){
 		++line_count;
 		printf(line);
-//		if(strstr(line,search) != NULL){
-//			printf("SUCCESS WITH LINE %d\n",(char)line_count);
+
+//		char *temp = malloc(strlen(line));
+//		strncpy(temp,line,strlen(line));
+//
+//		if(strstr(temp,search)!=NULL){
+//			printf("SUCCES %s",line_count);
 //		}
+//		free(temp);
 	}
 }
 
